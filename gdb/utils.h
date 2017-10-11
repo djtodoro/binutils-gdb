@@ -71,8 +71,8 @@ extern struct cleanup *
   make_cleanup_ui_out_redirect_pop (struct ui_out *uiout);
 
 struct section_addr_info;
-extern struct cleanup *(make_cleanup_free_section_addr_info 
-                        (struct section_addr_info *));
+extern struct cleanup *make_cleanup_free_section_addr_info
+                       (struct section_addr_info *);
 
 /* For make_cleanup_close see common/filestuff.h.  */
 
