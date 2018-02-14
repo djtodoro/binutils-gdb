@@ -290,19 +290,19 @@ verilog_mkobject (bfd *abfd)
   return TRUE;
 }
 
-#define	verilog_close_and_cleanup                    _bfd_generic_close_and_cleanup
-#define verilog_bfd_free_cached_info                 _bfd_generic_bfd_free_cached_info
-#define verilog_new_section_hook                     _bfd_generic_new_section_hook
-#define verilog_bfd_is_target_special_symbol         ((bfd_boolean (*) (bfd *, asymbol *)) bfd_false)
-#define verilog_bfd_is_local_label_name              bfd_generic_is_local_label_name
-#define verilog_get_lineno                           _bfd_nosymbols_get_lineno
-#define verilog_find_nearest_line                    _bfd_nosymbols_find_nearest_line
-#define verilog_find_inliner_info                    _bfd_nosymbols_find_inliner_info
-#define verilog_make_empty_symbol                    _bfd_generic_make_empty_symbol
-#define verilog_bfd_make_debug_symbol                _bfd_nosymbols_bfd_make_debug_symbol
-#define verilog_read_minisymbols                     _bfd_generic_read_minisymbols
-#define verilog_minisymbol_to_symbol                 _bfd_generic_minisymbol_to_symbol
-#define verilog_get_section_contents_in_window       _bfd_generic_get_section_contents_in_window
+#define verilog_close_and_cleanup		     _bfd_generic_close_and_cleanup
+#define verilog_bfd_free_cached_info		     _bfd_generic_bfd_free_cached_info
+#define verilog_new_section_hook		     _bfd_generic_new_section_hook
+#define verilog_bfd_is_target_special_symbol	     ((bfd_boolean (*) (bfd *, asymbol *)) (bfd_boolean (*)) bfd_false)
+#define verilog_bfd_is_local_label_name		     bfd_generic_is_local_label_name
+#define verilog_get_lineno			     _bfd_nosymbols_get_lineno
+#define verilog_find_nearest_line		     _bfd_nosymbols_find_nearest_line
+#define verilog_find_inliner_info		     _bfd_nosymbols_find_inliner_info
+#define verilog_make_empty_symbol		     _bfd_generic_make_empty_symbol
+#define verilog_bfd_make_debug_symbol		     _bfd_nosymbols_bfd_make_debug_symbol
+#define verilog_read_minisymbols		     _bfd_generic_read_minisymbols
+#define verilog_minisymbol_to_symbol		     _bfd_generic_minisymbol_to_symbol
+#define verilog_get_section_contents_in_window	     _bfd_generic_get_section_contents_in_window
 #define verilog_bfd_get_relocated_section_contents   bfd_generic_get_relocated_section_contents
 #define verilog_bfd_relax_section                    bfd_generic_relax_section
 #define verilog_bfd_gc_sections                      bfd_generic_gc_sections

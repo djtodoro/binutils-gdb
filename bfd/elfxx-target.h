@@ -142,7 +142,7 @@
 #define bfd_elfNN_bfd_debug_info_start	bfd_void
 #define bfd_elfNN_bfd_debug_info_end	bfd_void
 #define bfd_elfNN_bfd_debug_info_accumulate \
-  ((void (*) (bfd*, struct bfd_section *)) bfd_void)
+  ((void (*) (bfd*, struct bfd_section *)) (void (*)) bfd_void)
 
 #ifndef bfd_elfNN_bfd_get_relocated_section_contents
 #define bfd_elfNN_bfd_get_relocated_section_contents \
@@ -209,7 +209,7 @@
 
 #ifndef bfd_elfNN_bfd_make_debug_symbol
 #define bfd_elfNN_bfd_make_debug_symbol \
-  ((asymbol * (*) (bfd *, void *, unsigned long)) bfd_nullvoidptr)
+  ((asymbol * (*) (bfd *, void *, unsigned long)) (asymbol * (*)) bfd_nullvoidptr)
 #endif
 
 #ifndef bfd_elfNN_bfd_copy_private_symbol_data
@@ -235,18 +235,18 @@
 #endif
 #ifndef bfd_elfNN_bfd_merge_private_bfd_data
 #define bfd_elfNN_bfd_merge_private_bfd_data \
-  ((bfd_boolean (*) (bfd *, struct bfd_link_info *)) bfd_true)
+  ((bfd_boolean (*) (bfd *, struct bfd_link_info *)) (bfd_boolean (*)) bfd_true)
 #endif
 #ifndef bfd_elfNN_bfd_set_private_flags
 #define bfd_elfNN_bfd_set_private_flags \
-  ((bfd_boolean (*) (bfd *, flagword)) bfd_true)
+  ((bfd_boolean (*) (bfd *, flagword)) (bfd_boolean (*)) bfd_true)
 #endif
 #ifndef bfd_elfNN_bfd_is_local_label_name
 #define bfd_elfNN_bfd_is_local_label_name _bfd_elf_is_local_label_name
 #endif
 #ifndef bfd_elfNN_bfd_is_target_special_symbol
 #define bfd_elfNN_bfd_is_target_special_symbol \
-  ((bfd_boolean (*) (bfd *, asymbol *)) bfd_false)
+  ((bfd_boolean (*) (bfd *, asymbol *)) (bfd_boolean (*)) bfd_false)
 #endif
 
 #ifndef bfd_elfNN_get_dynamic_reloc_upper_bound
@@ -471,7 +471,7 @@
 #endif
 #ifndef elf_backend_init_index_section
 #define elf_backend_init_index_section \
- ((void (*) (bfd *, struct bfd_link_info *)) bfd_void)
+  ((void (*) (bfd *, struct bfd_link_info *)) (void (*)) bfd_void)
 #endif
 #ifndef elf_backend_relocate_section
 #define elf_backend_relocate_section	0
@@ -499,7 +499,7 @@
 #endif
 #ifndef elf_backend_allow_non_load_phdr
 #define elf_backend_allow_non_load_phdr	\
-  ((bfd_boolean (*) (bfd *, const Elf_Internal_Phdr *, unsigned)) bfd_false)
+  ((bfd_boolean (*) (bfd *, const Elf_Internal_Phdr *, unsigned)) (bfd_boolean (*)) bfd_false)
 #endif
 #ifndef elf_backend_ecoff_debug_swap
 #define elf_backend_ecoff_debug_swap	0
