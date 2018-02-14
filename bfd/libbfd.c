@@ -84,7 +84,7 @@ bfd_0u (bfd *ignore ATTRIBUTE_UNUSED)
 long
 bfd_0l (bfd *ignore ATTRIBUTE_UNUSED)
 {
-  return 0;
+  return 0l;
 }
 
 /* A routine which is used in target vectors for unsupported
