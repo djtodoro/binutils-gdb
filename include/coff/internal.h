@@ -400,7 +400,7 @@ struct internal_aouthdr
 
 struct internal_scnhdr
 {
-  char s_name[SCNNMLEN];	/* section name			*/
+  char s_name[SCNNMLEN] ATTRIBUTE_NONSTRING;	/* section name	*/
 
   /* Physical address, aliased s_nlib.
      In the pei format, this field is the virtual section size
@@ -474,7 +474,7 @@ struct internal_syment
 {
   union
   {
-    char _n_name[SYMNMLEN];	/* old COFF version		*/
+    char _n_name[SYMNMLEN] ATTRIBUTE_NONSTRING;	/* old COFF version	*/
     struct
     {
       bfd_hostptr_t _n_zeroes;	/* new == 0			*/

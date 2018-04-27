@@ -45,8 +45,8 @@ struct elf_external_linux_prpsinfo32
     char pr_ppid[4];
     char pr_pgrp[4];
     char pr_sid[4];
-    char pr_fname[16];			/* Filename of executable.  */
-    char pr_psargs[80];			/* Initial part of arg list.  */
+    char pr_fname[16] ATTRIBUTE_NONSTRING;  /* Filename of executable.  */
+    char pr_psargs[80] ATTRIBUTE_NONSTRING; /* Initial part of arg list.  */
   };
 
 /* Helper function to copy an elf_internal_linux_prpsinfo in host
@@ -93,8 +93,8 @@ struct elf_external_linux_prpsinfo64
     char pr_ppid[4];
     char pr_pgrp[4];
     char pr_sid[4];
-    char pr_fname[16];			/* Filename of executable.  */
-    char pr_psargs[80];			/* Initial part of arg list.  */
+    char pr_fname[16] ATTRIBUTE_NONSTRING;  /* Filename of executable.  */
+    char pr_psargs[80] ATTRIBUTE_NONSTRING; /* Initial part of arg list.  */
   };
 
 /* Helper function to copy an elf_internal_linux_prpsinfo in host
