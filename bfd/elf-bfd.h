@@ -1881,7 +1881,7 @@ struct elf_obj_tdata
   struct sdt_note *sdt_note_head;
 
   Elf_Internal_Shdr **group_sect_ptr;
-  int num_group;
+  unsigned int num_group;
 
   unsigned int symtab_section, dynsymtab_section;
   unsigned int dynversym_section, dynverdef_section, dynverref_section;
