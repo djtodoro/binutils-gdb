@@ -2281,7 +2281,7 @@
 *nanomips32r6:
 *nanomips64r6:
 {
-  do_slti (SD_, RS, RT, EXTEND12(IMMEDIATE));
+  do_slti (SD_, RS, RT, IMMEDIATE);
 }
 
 100000,5.RT,5.RS,0101,12.U:R6PU12:32::SLTIU
@@ -2289,7 +2289,7 @@
 *nanomips32r6:
 *nanomips64r6:
 {
-  do_sltiu (SD_, RS, RT, EXTEND12(U));
+  do_sltiu (SD_, RS, RT, U);
 }
 
 001000,5.RT,5.RS,5.RD!0,1.X,1110010,000:R6PSLTU:32::SLTU
