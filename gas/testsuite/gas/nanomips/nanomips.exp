@@ -522,6 +522,7 @@ if { [istarget nanomips*-*-*] } {
 	    "nanoMIPS branch swapping ($count)"
     }
     run_dump_test_arch "branch-relax" "" nanomips32
+    run_dump_test_arch "branch-relax2" "" nanomips32
     run_list_test "branch-relax" "-EL -al -mno-minimize-relocs" \
 	"Test nanoMIPS assembly listing in little endian mode"
     run_dump_test_arch "branch-relax32" "" nanomips32

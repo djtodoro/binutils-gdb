@@ -674,6 +674,9 @@ enum relax_nanomips_fix_type
 #define RELAX_MD_MARK_NORELAX(i) (((i) & ~0x18000) \
 					 | (RF_NORELAX << 15))
 
+#define RELAX_MD_TOOFAR_FINAL(i) (((i) & 0x20000) != 0)
+#define RELAX_MD_MARK_TOOFAR_FINAL(i) (RELAX_MD_MARK_TOOFAR16(i) | 0x20000)
+
 /* Sign-extend 16-bit value X.  */
 #define SEXT_16BIT(X) ((((X) + 0x8000) & 0xffff) - 0x8000)
 
@@ -11307,6 +11310,12 @@ relaxed_16bit_branch_length (fragS *fragp, asection *sec, int update)
 {
   bfd_boolean toofar;
 
+  /* Short-circuit the relaxation check for branches at the boundary between
+     2 & 4 byte ranges.  */
+  if (RELAX_MD_TOOFAR_FINAL (fragp->fr_subtype)
+      && !RELAX_MD_USESTUB (fragp->fr_subtype))
+    return fragp->fr_var;
+
   if (fragp
       && fragp->fr_symbol
       && S_IS_DEFINED (fragp->fr_symbol)
@@ -11319,11 +11328,9 @@ relaxed_16bit_branch_length (fragS *fragp, asection *sec, int update)
 
       val = S_GET_VALUE (fragp->fr_symbol) + fragp->fr_offset;
 
-      /* Assume this is a 2-byte branch.  */
-      addr = fragp->fr_address + fragp->fr_fix + 2;
+      /*  Calculate next PC based on current expansion state.  */
+      addr = fragp->fr_address + fragp->fr_fix + fragp->fr_var;
 
-      /* We try to avoid the infinite loop by not adding 2 more bytes for
-	 long branches.  */
       val -= addr;
 
       type = RELAX_MD_TYPE (fragp->fr_subtype);
@@ -11340,6 +11347,20 @@ relaxed_16bit_branch_length (fragS *fragp, asection *sec, int update)
 					      (fragp->fr_symbol))));
       else
 	toofar = TRUE;
+
+      /* Mark branches that get expanded from 2 to 4 bytes at the range boundary
+	 in any iteration as permanent expansions to avoid oscillation.  */
+      if (update && toofar && fragp->fr_var == 2)
+	{
+	  if (((type == RT_BRANCH_UCND
+		|| type == RT_BALC_STUB)
+	       && (val == -0x402 || val == 0x400))
+	      || ((type == RT_BRANCH_CNDZ)
+		  && (val == -0x82 || val == 0x80))
+	      ||  ((type == RT_BRANCH_CND)
+		   && val == 32))
+	    fragp->fr_subtype = RELAX_MD_MARK_TOOFAR_FINAL (fragp->fr_subtype);
+	}
     }
   else
     /* If the symbol is not defined or it's in a different segment,
