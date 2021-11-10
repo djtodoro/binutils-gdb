@@ -706,6 +706,8 @@ if { [istarget nanomips*-*-*] } {
 					[arch_list_matching nanomips32]
     run_dump_test_arches "minimize-relocs7" \
 					[arch_list_matching nanomips32]
+    run_dump_test_arches "minimize-relocs8" \
+					[arch_list_matching nanomips32]
 
     # tests of objdump's ability to disassemble the move mnemonic
     run_dump_test_arches "move"		[arch_list_matching nanomipsr6]

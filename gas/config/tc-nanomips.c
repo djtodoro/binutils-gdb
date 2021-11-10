@@ -11173,7 +11173,8 @@ mark_if_invariable_branch (fragS *fragp, asection *sec)
   if (fragp->fr_symbol
       && (S_IS_EXTERNAL (fragp->fr_symbol)
 	  || S_IS_WEAK (fragp->fr_symbol)
-	  || sec != S_GET_SEGMENT (fragp->fr_symbol)))
+	  || sec != S_GET_SEGMENT (fragp->fr_symbol)
+	  || RELAX_MD_TOOFAR_FINAL (fragp->fr_subtype)))
     {
       if (!RELAX_MD_NORELAX (fragp->fr_subtype))
 	{
