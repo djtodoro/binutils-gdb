@@ -4952,21 +4952,26 @@ stublist_append_call (struct balc_stub *stub, bfd_vma callsite)
   return;
 }
 
+/* Prepend src call-list to dest call-list.   */
 static void
 stublist_merge_forward_calls (struct balc_stub *dest, struct balc_stub *src)
 {
+  gas_assert (src->last_call != NULL);
   src->last_call->next = dest->first_call;
   dest->first_call = src->first_call;
-  if (dest->last_call == NULL)
-    dest->last_call = dest->first_call;
+  if (dest->last_call == NULL)   /* destination empty, fix end pointer  */
+    dest->last_call = src->last_call;
   dest->numcalls += src->numcalls;
 }
 
+/* Append src call-list to dest call-list.   */
 static void
 stublist_merge_backward_calls (struct balc_stub *dest, struct balc_stub *src)
 {
+  gas_assert (dest->last_call != NULL);
   dest->last_call->next = src->first_call;
-  dest->last_call = src->last_call;
+  if (src->last_call != NULL)  /* src not empty  */
+    dest->last_call = src->last_call;
   dest->numcalls += src->numcalls;
 }
 
