@@ -1213,6 +1213,13 @@ get_frag_for_reloc (fragS *last_frag,
   return NULL;
 }
 
+static int rcomp (const void *r1, const void *r2)
+{
+  arelent *reloc1 = *(arelent **)r1;
+  arelent *reloc2 = *(arelent **)r2;
+  return (reloc2->address > reloc1->address ? -1 : 1);
+}
+
 static void
 write_relocs (bfd *abfd, asection *sec, void *xxx ATTRIBUTE_UNUSED)
 {
@@ -1346,6 +1353,7 @@ write_relocs (bfd *abfd, asection *sec, void *xxx ATTRIBUTE_UNUSED)
       flagword flags = bfd_get_section_flags (abfd, sec);
       flags |= SEC_RELOC;
       bfd_set_section_flags (abfd, sec, flags);
+      qsort (relocs, n, sizeof(arelent *), &rcomp);
       bfd_set_reloc (stdoutput, sec, relocs, n);
     }
 
