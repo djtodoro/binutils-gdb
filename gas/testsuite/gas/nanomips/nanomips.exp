@@ -809,4 +809,6 @@ if { [istarget nanomips*-*-*] } {
 					[arch_list_matching xnms]
     run_dump_test "ssdata-sections"
     run_list_test "relax-jumptable-overflow"
+
+    run_dump_test "reloc-sort"
 }

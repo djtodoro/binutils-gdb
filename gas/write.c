@@ -1346,6 +1346,9 @@ write_relocs (bfd *abfd, asection *sec, void *xxx ATTRIBUTE_UNUSED)
       flagword flags = bfd_get_section_flags (abfd, sec);
       flags |= SEC_RELOC;
       bfd_set_section_flags (abfd, sec, flags);
+#ifdef TC_SORT_RELOCS
+      TC_SORT_RELOCS(abfd, sec, relocs, n);
+#endif
       bfd_set_reloc (stdoutput, sec, relocs, n);
     }
 

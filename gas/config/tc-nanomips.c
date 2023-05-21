@@ -13884,8 +13884,47 @@ s_jumptable (int x ATTRIBUTE_UNUSED)
   return;
 }
 
-
 bfd_boolean nanomips_cfa_advance_loc_invariable_p (symbolS *to, symbolS *from)
 {
   return (nanomips_allow_local_subtract_symbols (to, from, TRUE));
+}
+
+static bfd_boolean placeholder_reloc_p (unsigned reloc_type)
+{
+  return (reloc_type >= R_NANOMIPS_ALIGN
+	  && reloc_type <= R_NANOMIPS_JUMPTABLE_LOAD);
+}
+
+/* qsort() is theoretically unstable.  We use typical relocation
+   sequence patterns to impose a total order on relocations and
+   get rid of the instability.  In practice, this matches the
+   order of composite relocation sequences in the unsorted list.
+ */
+static int nanomips_sort_relocs_compare (const void *r1, const void *r2)
+{
+  arelent *reloc1 = *(arelent **)r1;
+  arelent *reloc2 = *(arelent **)r2;
+  if (reloc2->address > reloc1->address)
+    return -1;
+  else if (reloc2->address < reloc1->address)
+    return 1;
+  else if (placeholder_reloc_p (reloc1->howto->type)
+	   && !placeholder_reloc_p (reloc2->howto->type))
+    return 1;
+  else if (placeholder_reloc_p (reloc2->howto->type)
+	   && !placeholder_reloc_p (reloc1->howto->type))
+    return -1;
+  else if (placeholder_reloc_p (reloc1->howto->type))
+    return (reloc1->howto->type - reloc2->howto->type);
+  else
+    return (reloc1->howto->type == R_NANOMIPS_NEG) ? -1 : 1;
+}
+
+void nanomips_sort_relocs_final (bfd *abfd, asection *sec, arelent **relocs,
+				 unsigned rcount)
+{
+  flagword flags = bfd_get_section_flags (abfd, sec);
+  /* Skip sorting for non-code sections.  */
+  if (flags & SEC_CODE)
+    qsort (relocs, rcount, sizeof(arelent *), &nanomips_sort_relocs_compare);
 }

@@ -213,4 +213,9 @@ void nanomips_post_relax_hook (void);
 int nanomips_cfa_advance_loc_invariable_p (symbolS *, symbolS *);
 #define tc_cfa_advance_loc_invariable_p(to,from) \
 	nanomips_cfa_advance_loc_invariable_p(to,from)
+
+void nanomips_sort_relocs_final (bfd *abfd, asection *sec, arelent **relocs,
+				 unsigned rcount);
+#define TC_SORT_RELOCS nanomips_sort_relocs_final
+
 #endif /* TC_NANOMIPS */
