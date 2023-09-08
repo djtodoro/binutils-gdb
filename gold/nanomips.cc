@@ -5432,6 +5432,9 @@ Nanomips_expand_insn<size, big_endian>::type(
     case elfcpp::R_NANOMIPS_PC25_S1:
       {
         Valtype value = psymval->value(relobj, r_addend) - address - 4;
+        // TODO: Here to add checking of those bits, but it should be proposed by clients
+        // If it does not meet requirements, also fail, go to TT_NONE.
+        // TODO: Add option for this.
         if (!this->template has_overflow_signed<26>(value))
           return TT_NONE;
         break;
