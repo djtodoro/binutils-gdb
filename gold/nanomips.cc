@@ -8556,8 +8556,12 @@ Target_nanomips<size, big_endian>::Relocate::relocate(
 
   // If we didn't apply previous relocation, use its result as addend
   // for the current.
+
+  // Aca: Ovo sigurno ne moze ovako kao je bilo. Ne sme se zanemarivati r_addend tekuce relokacije.
+  // Do sada je "radilo" zato sto je to uglavom bilo 0.
+  // Nagadjam da treba sabrati, nisam uopste siguran da je to uvek korektno.
   if (this->calculate_only_)
-    r_addend = this->calculated_value_;
+    r_addend += this->calculated_value_;
 
   const Nanomips_reloc_property* next_reloc_property =
     nanomips_reloc_property_table->get_reloc_property(next_r_type);
