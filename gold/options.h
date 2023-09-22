@@ -1217,7 +1217,7 @@ class General_options
 	      N_("(nanoMIPS only) Relax R_NANOMIPS_LO12 relocation"),
 	      N_("(nanoMIPS only) Do not relax R_NANOMIPS_LO12 relocation"));
 
-  DEFINE_bool(fix_nanomips113064, options::TWO_DASHES, '\0', false,
+  DEFINE_bool(fix_nmips_hw113064, options::TWO_DASHES, '\0', false,
         N_("(nanoMIPS only) Fix binaries for nanoMIPS erratum 113064"),
         N_("(nanoMIPS only) Do not fix binaries for nanoMIPS erratum 113064"));
 

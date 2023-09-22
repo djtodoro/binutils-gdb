@@ -5434,7 +5434,7 @@ Nanomips_expand_insn<size, big_endian>::type(
         Valtype value = psymval->value(relobj, r_addend) - address - 4;
 
         if (!this->template has_overflow_signed<26>(value)) {
-          if (parameters->options().fix_nanomips113064()) {
+          if (parameters->options().fix_nmips_hw113064()) {
             typedef typename elfcpp::Elf_types<size>::Elf_Swxword Signed_valtype;
             // The offset in backward branch should be less than or equal to 0xffff.
             // The offset in forward branch should be greater than or equal to

@@ -4359,22 +4359,22 @@ nanomips_move_balc_2_out_of_range_pcrel: nanomips_move_balc_out_of_range_pcrel.o
 	../ld-new --section-start .text=0x1000 --section-start .foo=0x2001020 -o $@ $<
 
 nanomips_long_balc_bc_offset_1: nanomips_long_balc_bc_offset.o ../ld-new
-	../ld-new --fix-nanomips113064 --section-start .text=0x1000 --section-start .foo=0x1fe1002 -o $@ $<
+	../ld-new --fix-nmips-hw113064 --section-start .text=0x1000 --section-start .foo=0x1fe1002 -o $@ $<
 
 nanomips_long_balc_bc_offset_2: nanomips_long_balc_bc_offset.o ../ld-new
 	../ld-new --section-start .text=0x1000 --section-start .foo=0x1fe1002 -o $@ $<
 
 nanomips_long_balc_bc_offset_3: nanomips_long_balc_bc_offset.o ../ld-new
-	../ld-new --fix-nanomips113064 --section-start .text=0x1000 --section-start .foo=0x1fe1004 -o $@ $<
+	../ld-new --fix-nmips-hw113064 --section-start .text=0x1000 --section-start .foo=0x1fe1004 -o $@ $<
 
 nanomips_long_balc_bc_offset_4: nanomips_long_balc_bc_offset.o ../ld-new
 	../ld-new --section-start .text=0x1000 --section-start .foo=0x1fe1004 -o $@ $<
 
 nanomips_long_balc_bc_offset_5: nanomips_long_balc_bc_offset.o ../ld-new
-	../ld-new --fix-nanomips113064 --section-start .text=0x1fe0ffc --section-start .foo=0x1000 -o $@ $<
+	../ld-new --fix-nmips-hw113064 --section-start .text=0x1fe0ffc --section-start .foo=0x1000 -o $@ $<
 
 nanomips_long_balc_bc_offset_6: nanomips_long_balc_bc_offset.o ../ld-new
-	../ld-new --fix-nanomips113064 --section-start .text=0x1fe0ffe --section-start .foo=0x1000 -o $@ $<
+	../ld-new --fix-nmips-hw113064 --section-start .text=0x1fe0ffe --section-start .foo=0x1000 -o $@ $<
 
 nanomips_lapc_out_of_range_pcrel: nanomips_lapc_out_of_range_pcrel.o ../ld-new
 	../ld-new --section-start .text=0x1000 --section-start .foo=0x2001020 -o $@ $<
