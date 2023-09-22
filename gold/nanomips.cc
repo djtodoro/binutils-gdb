@@ -21,7 +21,7 @@
 // MA 02110-1301, USA.
 
 #include "gold.h"
-
+#include <iostream>
 #include <algorithm>
 #include <set>
 #include <sstream>
@@ -1541,7 +1541,8 @@ class Nanomips_transformations
             Nanomips_input_section* input_section,
             unsigned int type,
             size_t relnum,
-            uint32_t insn);
+            uint32_t insn,
+            Nanomips_relobj<size, big_endian>* relobj);
 
   // Print transformation.
   void
@@ -4655,7 +4656,8 @@ Nanomips_transformations<size, big_endian>::transform(
     Nanomips_input_section* input_section,
     unsigned int type,
     size_t relnum,
-    uint32_t insn)
+    uint32_t insn,
+    Nanomips_relobj<size, big_endian>* relobj)
 {
   ++Nanomips_transformations<size, big_endian>::instruction_count;
   gold_assert(transform_template != NULL);
@@ -4836,8 +4838,56 @@ Nanomips_transformations<size, big_endian>::transform(
             auto t = target->find_balc_trampoline(address);
             if (t != nullptr)
             {
-              r_sym = 0;
-              r_addend = t->target;
+              std::cout << "Here we are!\n";
+
+              const Sized_symbol<size>* sym;
+              Symbol_value<size> symval;
+              const Symbol_value<size> *psymval;
+              const unsigned int local_count = relobj->local_symbol_count();
+              if (r_sym < local_count)
+                {
+                  sym = NULL;
+                  psymval = relobj->local_symbol(r_sym);
+                }
+              else
+                {
+                  const Symbol* gsym = relobj->global_symbol(r_sym);
+                  gold_assert(gsym != NULL);
+                  if (gsym->is_forwarder())
+                    gsym = relinfo->symtab->resolve_forwards(gsym);
+            
+                  sym = static_cast<const Sized_symbol<size>*>(gsym);
+                  symval.set_output_value(sym->value());
+                  psymval = &symval;
+                }
+
+              std::cout << "symmmm " << std::hex <<  psymval->input_value() << "\n";
+
+              Valtype value = psymval->value(relobj, r_addend);
+              Valtype reloc = ((value & ~0x1) | ((value >> (size - 1)) & 0x1));
+
+              std::cout << "symmmm full " << std::hex <<  value << "\n";
+              std::cout << "symmmm full " << std::hex <<  reloc << "\n";
+              std::cout << "trampoline " << std::hex <<  t->target << "\n";
+              std::cout << "subroutine " << std::hex << psymval->input_value() + address << "\n";
+              std::cout << "pc " << address << "\n";
+
+              // forward balc
+              if (address < t->target) {
+                r_addend =  t->target - (reloc + address) + 4;
+              } else {
+                // backward balc
+                std::cout << "neeeeeeeeeeeeeeeeeeeeeeeeeeeeee\n";
+                r_addend =  t->target - (reloc + address);
+              }
+
+              typedef typename elfcpp::Elf_types<size>::Elf_Swxword Signed_valtype;
+              
+              if (static_cast<Signed_valtype>(psymval->input_value()) < 0)
+                 std::cout << "breeeeeeeeeeee " << std::hex <<  psymval->input_value() << "\n";
+
+              std::cout << "addendeeeeeeeeeeeeeeeeeee " << std::hex <<  r_addend << "\n";
+
             }
           }
 
@@ -7806,7 +7856,7 @@ Target_nanomips<size, big_endian>::scan_reloc_section_for_transform(
 
       // Transform instruction.
       transform.transform(relinfo, this, transform_template, insn_property,
-                          input_section, type, i, insn);
+                          input_section, type, i, insn, relobj);
 
       if (is_debugging_enabled(DEBUG_TARGET))
         transform.print(relinfo, transform_template, insn_property->name(),
