@@ -21,7 +21,7 @@
 // MA 02110-1301, USA.
 
 #include "gold.h"
-//#include <iostream>
+#include <iostream>
 #include <algorithm>
 #include <set>
 #include <sstream>
@@ -1542,7 +1542,8 @@ class Nanomips_transformations
             unsigned int type,
             size_t relnum,
             uint32_t insn,
-            Nanomips_relobj<size, big_endian>* relobj);
+            Nanomips_relobj<size, big_endian>* relobj,
+            const Symbol_table* symtab);
 
   // Print transformation.
   void
@@ -4657,7 +4658,8 @@ Nanomips_transformations<size, big_endian>::transform(
     unsigned int type,
     size_t relnum,
     uint32_t insn,
-    Nanomips_relobj<size, big_endian>* relobj)
+    Nanomips_relobj<size, big_endian>* relobj,
+    const Symbol_table* symtab)
 {
   ++Nanomips_transformations<size, big_endian>::instruction_count;
   gold_assert(transform_template != NULL);
@@ -4841,17 +4843,34 @@ Nanomips_transformations<size, big_endian>::transform(
                   const unsigned int local_count = relobj->local_symbol_count();
                   const Symbol_value<size> *psymval;
                   // std::cout << "target " << std::hex << t->target << "\n";
+                  // std::cout << "Local Symbols cnt " << std::dec << local_count << "\n";
+                  
+                  std::cout << "===========\n\n";
+
                   for (unsigned i = 0; i < local_count; ++i) {
                     psymval = relobj->local_symbol(i);
 
-                    if (psymval->input_value() + input_section->address() ==
+                    if (psymval->input_value() + input_section->address() + 4 ==
                         t->target) {
-                        // std::cout << "aaaaaaaa " << std::dec << i << "\n";
+                        std::cout << "relocated " << std::hex << psymval->input_value() + input_section->address() + 4 << "\n";
+                        std::cout << "aaaaaaaa " << std::dec << i << "\n";
+                        std::cout << "sec " << std::hex << input_section->address() << "\n";
+                        std::cout << "sssssssssssss " << std::hex << psymval->input_value() << "\n";
+
+                        //std::cout << "indexxxxxxxxxxxxxx " << std::dec << psymval->output_symtab_index() << "\n";
+                        
+                        // TODO: update all pairs t->rarget, r_sym to point to new i if it got changed
+
                         r_sym = i;
                         r_addend = 0;
                         break;
                     }
                   }
+
+              r_sym = 12;
+              r_addend = 0;
+              
+              std::cout << "******************\n\n";
             }
           }
 
@@ -7820,7 +7839,7 @@ Target_nanomips<size, big_endian>::scan_reloc_section_for_transform(
 
       // Transform instruction.
       transform.transform(relinfo, this, transform_template, insn_property,
-                          input_section, type, i, insn, relobj);
+                          input_section, type, i, insn, relobj, symtab);
 
       if (is_debugging_enabled(DEBUG_TARGET))
         transform.print(relinfo, transform_template, insn_property->name(),
