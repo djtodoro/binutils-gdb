@@ -21,7 +21,7 @@
 // MA 02110-1301, USA.
 
 #include "gold.h"
-
+//#include <iostream>
 #include <algorithm>
 #include <set>
 #include <sstream>
@@ -1541,7 +1541,8 @@ class Nanomips_transformations
             Nanomips_input_section* input_section,
             unsigned int type,
             size_t relnum,
-            uint32_t insn);
+            uint32_t insn,
+            Nanomips_relobj<size, big_endian>* relobj);
 
   // Print transformation.
   void
@@ -4655,7 +4656,8 @@ Nanomips_transformations<size, big_endian>::transform(
     Nanomips_input_section* input_section,
     unsigned int type,
     size_t relnum,
-    uint32_t insn)
+    uint32_t insn,
+    Nanomips_relobj<size, big_endian>* relobj)
 {
   ++Nanomips_transformations<size, big_endian>::instruction_count;
   gold_assert(transform_template != NULL);
@@ -4836,8 +4838,20 @@ Nanomips_transformations<size, big_endian>::transform(
             auto t = target->find_balc_trampoline(address);
             if (t != nullptr)
             {
-              r_sym = 0;
-              r_addend = t->target;
+                  const unsigned int local_count = relobj->local_symbol_count();
+                  const Symbol_value<size> *psymval;
+                  // std::cout << "target " << std::hex << t->target << "\n";
+                  for (unsigned i = 0; i < local_count; ++i) {
+                    psymval = relobj->local_symbol(i);
+
+                    if (psymval->input_value() + input_section->address() ==
+                        t->target) {
+                        // std::cout << "aaaaaaaa " << std::dec << i << "\n";
+                        r_sym = i;
+                        r_addend = 0;
+                        break;
+                    }
+                  }
             }
           }
 
@@ -7806,7 +7820,7 @@ Target_nanomips<size, big_endian>::scan_reloc_section_for_transform(
 
       // Transform instruction.
       transform.transform(relinfo, this, transform_template, insn_property,
-                          input_section, type, i, insn);
+                          input_section, type, i, insn, relobj);
 
       if (is_debugging_enabled(DEBUG_TARGET))
         transform.print(relinfo, transform_template, insn_property->name(),
