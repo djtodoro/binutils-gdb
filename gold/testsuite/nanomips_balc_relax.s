@@ -6,6 +6,7 @@
 	.globl	test
 	.ent	test
 test:
+".L__reloc_balc_stub_\20":
 	balc	subroutine
 	balc	subroutine
 	balc	subroutine

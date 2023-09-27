@@ -1932,6 +1932,7 @@ class Target_nanomips : public Sized_target<size, big_endian>
     Address target;
     bool ignore{true};
     bool is_trampoline{false};
+    bool calculated{false};
 
     Balc_trampoline(Address address_, Address target_)
       : address(address_), target(target_) { }
@@ -1963,9 +1964,9 @@ class Target_nanomips : public Sized_target<size, big_endian>
   { return new Nanomips_symbol<size>(); }
 
   // Clear BALC trampolines.
-  void
-  clear_balc_trampolines()
-  { balc_trampolines_.clear(); }
+  // void
+  // clear_balc_trampolines()
+  // { balc_trampolines_.clear(); }
 
   inline bool is_generating_trampolines() const
   { return state_ == TRAMPOLINE_B; }
@@ -1992,6 +1993,15 @@ class Target_nanomips : public Sized_target<size, big_endian>
     return nullptr;
   }
 
+
+//  void print_balc_trampoline()
+//   {
+ 
+//     for (auto &t : balc_trampolines_)
+// {
+//   std::cout << std::hex << (int)t.address << ": " << (int)t.target << std::dec << '\n';
+// }
+// }
   // Process the relocations to determine unreferenced sections for
   // garbage collection.
   void
@@ -4661,6 +4671,8 @@ Nanomips_transformations<size, big_endian>::transform(
     Nanomips_relobj<size, big_endian>* relobj,
     const Symbol_table* symtab)
 {
+  //std::cout << "Pozivam transform za relnum " << relnum << "\n" ;
+
   ++Nanomips_transformations<size, big_endian>::instruction_count;
   gold_assert(transform_template != NULL);
   gold_assert(insn_property != NULL);
@@ -4833,46 +4845,51 @@ Nanomips_transformations<size, big_endian>::transform(
           // For 48-bit instructions, r_offset is pointing to the immediate.
           Address new_r_offset = (new_insn_size == 6 ? offset + 2 : offset);
 
-          if (type == TT_BALC_CALL)
-          {
-            gold_assert(new_r_type == elfcpp::R_NANOMIPS_PC10_S1);
-            Address address = input_section->address() + new_r_offset;
-            auto t = target->find_balc_trampoline(address);
-            if (t != nullptr)
-            {
-                  const unsigned int local_count = relobj->local_symbol_count();
-                  const Symbol_value<size> *psymval;
-                  // std::cout << "target " << std::hex << t->target << "\n";
-                  // std::cout << "Local Symbols cnt " << std::dec << local_count << "\n";
+//           if (type == TT_BALC_CALL)
+//           {
+//             gold_assert(new_r_type == elfcpp::R_NANOMIPS_PC10_S1);
+//             Address address = input_section->address() + new_r_offset;
+//             auto t = target->find_balc_trampoline(address);
+//             if (t != nullptr)
+//             {
+//                   // const unsigned int local_count = relobj->local_symbol_count();
+//                   // const Symbol_value<size> *psymval;
+//                   // // std::cout << "target " << std::hex << t->target << "\n";
+//                   // // std::cout << "Local Symbols cnt " << std::dec << local_count << "\n";
                   
-                  std::cout << "===========\n\n";
+//                   // std::cout << "===========\n\n";
 
-                  for (unsigned i = 0; i < local_count; ++i) {
-                    psymval = relobj->local_symbol(i);
+//                   // for (unsigned i = 0; i < local_count; ++i) {
+//                   //   psymval = relobj->local_symbol(i);
+//                   //       std::cout << "sec " << std::hex << input_section->address() << "\n";
+//                   //       std::cout << "sssssssssssss " << std::hex << psymval->input_value() << "\n";
 
-                    if (psymval->input_value() + input_section->address() + 4 ==
-                        t->target) {
-                        std::cout << "relocated " << std::hex << psymval->input_value() + input_section->address() + 4 << "\n";
-                        std::cout << "aaaaaaaa " << std::dec << i << "\n";
-                        std::cout << "sec " << std::hex << input_section->address() << "\n";
-                        std::cout << "sssssssssssss " << std::hex << psymval->input_value() << "\n";
+//                   //   if (psymval->input_value() == 0/*+ input_section->address() + 4 ==
+//                   //       t->target*/) {
+//                   //       std::cout << "relocated " << std::hex << psymval->input_value() + input_section->address() + 4 << "\n";
+//                   //       std::cout << "aaaaaaaa " << std::dec << i << "\n";
 
-                        //std::cout << "indexxxxxxxxxxxxxx " << std::dec << psymval->output_symtab_index() << "\n";
+//                   //       std::cout << "indexxxxxxxxxxxxxx " << std::dec << psymval->output_symtab_index() << "\n";
                         
-                        // TODO: update all pairs t->rarget, r_sym to point to new i if it got changed
+//                   //       // TODO: update all pairs t->rarget, r_sym to point to new i if it got changed
 
-                        r_sym = i;
-                        r_addend = 0;
-                        break;
-                    }
-                  }
+//                   //       r_sym = i;
+//                   //       r_addend = 0;
+//                   //       break;
+//                   //   }
+//                   // }
 
-              r_sym = 12;
-              r_addend = 0;
+//               r_sym = 0;
+//               r_addend = t->target;
+// //Relocatable_relocs::RELOC_COPY
+//               if (rr != NULL) {
+//                 std::cout << "Promenio start " << (int)rr->strategy(relnum) << "vs " << (int)Relocatable_relocs::RELOC_COPY << "\n";
+//                 rr->set_next_reloc_strategy(rr->strategy(relnum));
+//               }
               
-              std::cout << "******************\n\n";
-            }
-          }
+//               std::cout << "******************\n\n";
+//             }
+//           }
 
           if (!new_reloc)
             {
@@ -5663,8 +5680,16 @@ Nanomips_expand_insn<size, big_endian>::type(
         break;
       }
     case elfcpp::R_NANOMIPS_PC10_S1:
-      {
-        Valtype value = psymval->value(relobj, r_addend) - address - 2;
+      {//return TT_NONE;
+        Valtype value;
+        auto t = target->find_balc_trampoline(address);
+        if (t != nullptr && !t->ignore && !t->is_trampoline) {
+          value = t->target - address - 2;
+          if (!this->template has_overflow_signed<11>(value))
+            return TT_NONE;
+        }
+
+        value = psymval->value(relobj, r_addend) - address - 2;
         if (!this->template has_overflow_signed<11>(value))
           return TT_NONE;
         break;
@@ -5835,13 +5860,21 @@ Nanomips_trampoline<size, big_endian>::type(
   if (target->is_generating_trampolines())
     {
       auto t = target->find_balc_trampoline(address);
-
-      if (t == nullptr || t->ignore)
+//std::cout << "Tipujem " << std::hex << (int)address << std::dec << ": ";
+      if (t == nullptr || t->ignore) {
+  //      std::cout << "nista\n";
         return TT_NONE;
-      else if (t->is_trampoline)
+      }
+      else if (t->is_trampoline) {
+    //            std::cout << "tramp -- bc32 je na " << std::hex << (int)(address + 4) << std::dec << '\n';
+
         return TT_BALC_TRAMP;
-      else
+      }
+      else {
+      //          std::cout << "call na " << std::hex << (int)t->target << std::dec << '\n';
+
         return TT_BALC_CALL;
+      }
     }
   else
     {
@@ -6116,7 +6149,7 @@ Target_nanomips<size, big_endian>::do_relax(
       // Reset trampoline substate.
       else if (this->state_ == TRAMPOLINE_B)
         {
-          balc_trampolines_.clear();
+          //balc_trampolines_.clear();
 
           if (!again && parameters->options().expand())
           {
@@ -6139,7 +6172,8 @@ Target_nanomips<size, big_endian>::do_relax(
         }
       else if (this->state_ == TRAMPOLINE_A
                && !this->done_with_trampolines_)
-        {
+        {  std::cout << "Racunam trampoline\n" ;
+
           gold_assert(!again);
           std::map<Address, size_t> map;
           std::vector<Balc_trampoline_target> targets;
@@ -6153,8 +6187,11 @@ Target_nanomips<size, big_endian>::do_relax(
 
           for (size_t i = 0; i < balc_trampolines_.size(); i++)
             {
+              if (balc_trampolines_[i].calculated)
+                continue;
               auto titer = map.find(balc_trampolines_[i].target);
               bool start_new_area = titer == map.end();
+              balc_trampolines_[i].calculated = true;
 
               if (!start_new_area)
                 {
@@ -6208,14 +6245,14 @@ Target_nanomips<size, big_endian>::do_relax(
                   }
               }
 
-            Address delta = static_cast<Address>(0);
+            // Address delta = static_cast<Address>(0);
 
-            for (auto &t : balc_trampolines_)
-              {
-                t.address = t.address - delta;
-                if (!t.ignore)
-                  delta = delta + (t.is_trampoline ? -4 : 2);
-              }
+            // for (auto &t : balc_trampolines_)
+            //   {
+            //     t.address = t.address - delta;
+            //     if (!t.ignore)
+            //       delta = delta + (t.is_trampoline ? -4 : 2);
+            //   }
 
             for (auto t : targets)
               for (size_t i = t.first; i <= t.last; i++)
@@ -6224,7 +6261,8 @@ Target_nanomips<size, big_endian>::do_relax(
                     && !balc_trampolines_[i].is_trampoline)
                   balc_trampolines_[i].target =
                     balc_trampolines_[t.trampoline].address + 4;
-
+        //            - balc_trampolines_[i].address;
+//print_balc_trampoline();
             this->state_ = TRAMPOLINE_B;
         }
       else
@@ -7517,6 +7555,18 @@ Target_nanomips<size, big_endian>::update_content(
   typedef typename elfcpp::Rela<size, big_endian> Reltype;
   typedef typename elfcpp::Rela_write<size, big_endian> Reltype_write;
   const int reloc_size = elfcpp::Elf_sizes<size>::rela_size;
+//std::cout << "Radim update " << std::hex << (int)(input_section->address()+address) << std::dec << "\n";
+
+  Address abs_address = input_section->address() + address;
+
+  for (auto &t : balc_trampolines_)
+    if (!t.ignore)
+  {
+    if (t.address >= abs_address)
+      t.address += count;
+    if (!t.is_trampoline && (t.target >= abs_address + 4)) // 4 zato sto treba gledati pocetak sekvence trampoline, a ne target
+      t.target += count;
+  }
 
   if (count > 0)
     // Add bytes.
@@ -8533,6 +8583,7 @@ Target_nanomips<size, big_endian>::Relocate::relocate(
     Address address,
     section_size_type)
 {
+//  std::cout << "Radim relocate\n";
   const elfcpp::Rela<size, big_endian> reloc(preloc);
   const int reloc_size = elfcpp::Elf_sizes<size>::rela_size;
   unsigned int r_sym = elfcpp::elf_r_sym<size>(reloc.get_r_info());
@@ -8684,12 +8735,24 @@ Target_nanomips<size, big_endian>::Relocate::relocate(
     case elfcpp::R_NANOMIPS_PC32:
       value = psymval->value(object, r_addend) - address;
       break;
+    case elfcpp::R_NANOMIPS_PC10_S1:
+      {
+        //std::cout << "Trazim " << std::hex << (int)address << std::dec << "\n";
+        //target->print_balc_trampoline();
+        auto t = target->find_balc_trampoline(address);
+        if (t != nullptr && !t->ignore && !t->is_trampoline) {
+          value = t->target - address - 2;
+          break;
+        }
+      }
+    /* Fall through */
+
     case elfcpp::R_NANOMIPS_PC_I32:
     case elfcpp::R_NANOMIPS_PC25_S1:
     case elfcpp::R_NANOMIPS_PC21_S1:
     case elfcpp::R_NANOMIPS_PC14_S1:
     case elfcpp::R_NANOMIPS_PC11_S1:
-    case elfcpp::R_NANOMIPS_PC10_S1:
+    // case elfcpp::R_NANOMIPS_PC10_S1:
     case elfcpp::R_NANOMIPS_PC7_S1:
     case elfcpp::R_NANOMIPS_PC4_S1:
       {
