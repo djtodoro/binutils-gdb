@@ -258,6 +258,8 @@ NTT(PCREL16_LONG,     RELS(R(PC25_S1)),                               INSNS(ALUI
 NTT(PCREL32_LONG,     RELS(R(PC25_S1)),                               INSNS(ALUIPC32(PC_HI20, SREG), ORI32(LO12, SREG, SREG), JALRC32))
 NTT(BALC_TRAMP,       RELS(R(PC25_S1)),                               INSNS(BALC16_FIXED, BC16_FIXED, BC32))
 NTT(BALC_CALL,        RELS(R(PC25_S1)),                               INSNS(BALC16))
+// NOTRAMP, just to find out if NOTRAMP really points to balc instruction
+NTT(BALC_NOTRAMP,     RELS(R(NOTRAMP)),                               INSNS())
 
 // bc sym
 NIP32("bc",             0x28000000,    NULL,                 NULL,                  NULL,                 NULL)

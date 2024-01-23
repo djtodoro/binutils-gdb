@@ -4944,15 +4944,32 @@ check_SCRIPTS += nanomips_balc_relax.sh
 check_DATA += nanomips_balc_relax.stdout
 
 nanomips_balc_relax.stdout: nanomips_balc_relax
-       $(TEST_OBJDUMP) -d $< > $@
+	$(TEST_OBJDUMP) -d $< > $@
 
 nanomips_balc_relax: nanomips_balc_relax.o ../ld-new
-       ../ld-new nanomips_balc_relax.o --relax -o $@
+	../ld-new nanomips_balc_relax.o --relax -o $@
 
 nanomips_balc_relax.o: nanomips_balc_relax.s
-       $(TEST_AS) -EL -march=32r6 -m32 -o $@ $<
+	$(TEST_AS) -EL -march=32r6 -m32 -o $@ $<
 
 MOSTLYCLEANFILES += nanomips_balc_relax
+
+check_SCRIPTS += nanomips_balc_trampoline.sh
+check_DATA += nanomips_balc_trampoline.stdout
+
+nanomips_balc_trampoline.stdout: nanomips_balc_trampoline
+	$(TEST_OBJDUMP) -d $< > $@
+
+nanomips_balc_trampoline: nanomips_balc_trampoline_sup.o nanomips_balc_trampoline.o nanomips_balc_trampoline.ld ../ld-new
+	../ld-new  -Tnanomips_balc_trampoline.ld nanomips_balc_trampoline_sup.o nanomips_balc_trampoline.o -o $@
+
+nanomips_balc_trampoline_sup.o: nanomips_balc_trampoline_sup.s
+	$(TEST_AS) -EL -march=32r6 -m32 -o $@ $<
+
+nanomips_balc_trampoline.o: nanomips_balc_trampoline.s
+	$(TEST_AS) -EL -march=32r6 -m32 -o $@ $<
+
+MOSTLYCLEANFILES += nanomips_balc_trampoline
 
 endif DEFAULT_TARGET_NANOMIPS
 
